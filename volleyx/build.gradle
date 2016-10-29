@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 22
+
+        versionCode 1
+        versionName "1.0"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests.all {
+            systemProperty 'robolectric.offline', 'true'
+            systemProperty 'robolectric.dependency.dir', rootProject.projectDir.absolutePath + "/robolectic-dependency"
+        }
+    }
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.volley:volley:1.0.0'
+    compile 'io.reactivex:rxjava:1.2.1'
+    compile 'io.reactivex:rxandroid:1.2.1'
+
+    testCompile 'junit:junit:4.12'
+    testCompile "org.mockito:mockito-core:2.2.0"
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    testCompile "org.robolectric:robolectric:3.1.1"
+}
