@@ -7,10 +7,19 @@ Some android developer is still using volley as their network library, and it sh
 ##Usage
 
  `compile 'com.github.yangweigbh:volleyx:1.0.0'`
- 
- `compile 'io.reactivex:rxjava:x.y.z'`
- 
- `compile 'com.android.volley:volley:1.0.0'`
+
+this project depend on     
+> 'com.android.volley:volley:1.0.0'
+> 
+> 'io.reactivex:rxjava:1.2.1'
+
+if you want to use different version of rxjava and volley, add
+
+```java
+compile('com.github.yangweigbh:volleyx:1.0.0') {
+    transitive = false
+}
+```
  
  **Step1:** Init in the application onCreate, then everything is OK
  
