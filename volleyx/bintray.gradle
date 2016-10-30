@@ -85,8 +85,6 @@ bintray {
 
     publications = [ 'library' ]
 
-    override = true
-
     pkg {
         repo = 'maven'
         group = project.ext.group
