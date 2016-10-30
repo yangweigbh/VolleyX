@@ -16,6 +16,7 @@
 package com.github.yangweigbh.volleyx;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -35,12 +36,15 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func0;
 
 /**
  * Created by yangwei on 2016/10/29.
  */
 public class VolleyX {
     private static final String DEFAULT_DEX_DIR = "dx";
+    private static final String DEFAULT_LISTENER_FIELD = "mListener";
+    private static final String DEFAULT_ERROR_LISTENER_FIELD = "mErrorListener";
 
     public static RequestQueue DEFAULT_REQUESTQUEUE;
     static RequestQueue sRequestQueue;
@@ -69,10 +73,20 @@ public class VolleyX {
      * @param <T> request type
      * @return builder for chain call
      */
-    public static <T> Builder from(Request<T> request) {
+    public static <T> Observable<T> from(final Request<T> request) {
         if (!sInited) throw new IllegalStateException("call init first");
         if (request == null) throw new NullPointerException("request can not be null");
-        return new Builder(request);
+        return Observable.defer(new Func0<Observable<T>>() {
+            @Override
+            public Observable<T> call() {
+                try {
+                    return Observable.just(generateData(request));
+                } catch (InterruptedException | ExecutionException | IOException e) {
+                    VolleyXLog.e(e.getMessage());
+                    return Observable.error(e);
+                }
+            }
+        });
     }
 
     /**
@@ -83,10 +97,50 @@ public class VolleyX {
      * @param <T>
      * @return builder for chain call
      */
-    public static <T> Builder from(Request<T> request, String listernerField) {
+    public static <T> Observable<T> from(final Request<T> request, final String listernerField) {
         if (!sInited) throw new IllegalStateException("call init first");
         if (request == null) throw new NullPointerException("request can not be null");
-        return new Builder(request, listernerField);
+        return Observable.defer(new Func0<Observable<T>>() {
+
+            @Override
+            public Observable<T> call() {
+                try {
+                    return Observable.just(generateData(request, listernerField));
+                } catch (InterruptedException | ExecutionException | IOException e) {
+                    VolleyXLog.e(e.getMessage());
+                    return Observable.error(e);
+                }
+            }
+        });
+    }
+
+    static <T> T generateData(Request<T> request) throws InterruptedException, ExecutionException, IOException {
+        return generateData(request, DEFAULT_LISTENER_FIELD);
+    }
+
+    static <T> T generateData(Request<T> request, String listernerField) throws InterruptedException, ExecutionException, IOException {
+        if (request == null) throw new NullPointerException("request can not be null");
+        RequestFuture<T> future = getRequestFuture(request, listernerField);
+
+        return future.get();
+    }
+
+    static <T> RequestFuture<T> getRequestFuture(Request<T> request, String listernerField) {
+        if (request == null) throw new NullPointerException("request can not be null");
+        RequestFuture<T> future = RequestFuture.newFuture();
+
+        String listenerFieldName = TextUtils.isEmpty(listernerField)? DEFAULT_LISTENER_FIELD: listernerField;
+        String errorListenerFieldName = DEFAULT_ERROR_LISTENER_FIELD;
+        try {
+            Hack.HackedClass hackedClass = Hack.into(request.getClass());
+            hackedClass.field(listenerFieldName).set(request, future);
+            hackedClass.field(errorListenerFieldName).set(request, future);
+        } catch (Hack.HackDeclaration.HackAssertionException e) {
+            throw new IllegalStateException("the field name of your class is not correct: " + e.getHackedFieldName());
+        }
+
+        sRequestQueue.add(request);
+        return future;
     }
 
     /**
@@ -100,119 +154,5 @@ public class VolleyX {
 
         if (queue != null)
             sRequestQueue = queue;
-    }
-
-    public static class Builder<T> {
-        private static final String DEFAULT_LISTENER_FIELD = "mListener";
-        private static final String DEFAULT_ERROR_LISTENER_FIELD = "mErrorListener";
-
-        private String mListernerField = null;
-        private Request<T> mRequest;
-        Observable<T> mObservable;
-
-        Builder(Request<T> request) {
-            this.mRequest = request;
-        }
-
-        Builder(Request<T> request, String listernerField) {
-            this.mRequest = request;
-            this.mListernerField = listernerField;
-        }
-
-        public Builder subscribeOn(Scheduler scheduler) {
-            if (mObservable == null) {
-                get();
-            }
-            mObservable = mObservable.subscribeOn(scheduler);
-            return this;
-        }
-
-        public Builder observeOn(Scheduler scheduler) {
-            if (mObservable == null) {
-                get();
-            }
-            mObservable = mObservable.observeOn(scheduler);
-            return this;
-        }
-
-        public Subscription subscribe(Observer<T> observer) {
-            if (mObservable == null) {
-                get();
-            }
-            return mObservable.subscribe(observer);
-        }
-
-        public Subscription subscribe(Subscriber<T> subscriber) {
-            if (mObservable == null) {
-                get();
-            }
-            return mObservable.subscribe(subscriber);
-        }
-
-        public final Subscription subscribe() {
-            if (mObservable == null) {
-                get();
-            }
-            return mObservable.subscribe();
-        }
-
-        public final Subscription subscribe(Action1<? super T> onNext) {
-            if (mObservable == null) {
-                get();
-            }
-            return mObservable.subscribe(onNext);
-        }
-
-        public final Subscription subscribe(Action1<? super T> onNext, Action1<Throwable> onError) {
-            if (mObservable == null) {
-                get();
-            }
-            return mObservable.subscribe(onNext, onError);
-        }
-
-        public final Subscription subscribe(Action1<? super T> onNext, Action1<Throwable> onError, Action0 onCompleted) {
-            if (mObservable == null) {
-                get();
-            }
-            return mObservable.subscribe(onNext, onError, onCompleted);
-        }
-
-        public Observable<T> get() {
-            mObservable = Observable.defer(() -> {
-                try {
-                    return Observable.just(generateData());
-                } catch (InterruptedException | ExecutionException | IOException e) {
-                    VolleyXLog.e(e.getMessage());
-                    return Observable.error(e);
-                }
-            });
-            return mObservable;
-        }
-
-        T generateData() throws InterruptedException, ExecutionException, IOException {
-            RequestFuture<T> future = getRequestFuture();
-
-            return future.get();
-        }
-
-         RequestFuture<T> getRequestFuture() {
-            RequestFuture<T> future = RequestFuture.newFuture();
-            if (mRequest == null) {
-                throw new IllegalStateException("you should set request first to use this method");
-            }
-
-            String listenerFieldName = this.mListernerField != null? mListernerField : DEFAULT_LISTENER_FIELD;
-            String errorListenerFieldName = DEFAULT_ERROR_LISTENER_FIELD;
-            try {
-                Hack.HackedClass hackedClass = Hack.into(mRequest.getClass());
-                hackedClass.field(listenerFieldName).set(mRequest, future);
-                hackedClass.field(errorListenerFieldName).set(mRequest, future);
-            } catch (Hack.HackDeclaration.HackAssertionException e) {
-                throw new IllegalStateException("the field name of your class is not correct: " + e.getHackedFieldName());
-            }
-
-            sRequestQueue.add(mRequest);
-            return future;
-        }
     }
 }

@@ -1,31 +1,37 @@
 package com.github.yangweigbh.volleyx;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.RequestFuture;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+
+import rx.Observable;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by yangwei on 2016/10/29.
  */
 
 public class VolleyXTest extends BaseTest {
+    @Mock
+    RequestQueue mockReqeustQueue;
+    @Mock
+    Request mockRequest;
 
     @Test
     public void testInit_context_null() throws Exception {
@@ -64,7 +70,7 @@ public class VolleyXTest extends BaseTest {
     public void testFrom() throws Exception {
         VolleyX.sInited = true;
 
-        assertThat(VolleyX.from(mockRequest), is(instanceOf(VolleyX.Builder.class)));
+        assertThat(VolleyX.from(mockRequest), is(instanceOf(Observable.class)));
     }
 
     @Test
@@ -87,7 +93,7 @@ public class VolleyXTest extends BaseTest {
     public void testFrom1() throws Exception {
         VolleyX.sInited = true;
 
-        assertThat(VolleyX.from(mockRequest, ""), is(instanceOf(VolleyX.Builder.class)));
+        assertThat(VolleyX.from(mockRequest, ""), is(instanceOf(Observable.class)));
     }
 
     @Test
@@ -96,5 +102,88 @@ public class VolleyXTest extends BaseTest {
         VolleyX.setRequestQueue(requestQueue);
 
         assertThat(VolleyX.sRequestQueue, is(requestQueue));
+    }
+
+    @Test
+    public void generateData_request_null() throws Exception {
+        thrown.expect(NullPointerException.class);
+
+        VolleyX.generateData(null);
+    }
+
+    @Test
+    public void generateData1_request_null() throws Exception {
+        thrown.expect(NullPointerException.class);
+
+        VolleyX.generateData(null, "");
+    }
+
+    @Test
+    public void getRequestFuture_request_null() throws Exception {
+        thrown.expect(NullPointerException.class);
+
+        VolleyX.getRequestFuture(null, "");
+    }
+
+    @Test
+    public void getRequestFuture_customRequest() throws Exception {
+        VolleyX.sInited = true;
+        VolleyX.setRequestQueue(mockReqeustQueue);
+        TestRequest2 testRequest = new TestRequest2(Request.Method.GET, "", null);
+
+        VolleyX.getRequestFuture(testRequest, "mListener1");
+        assertThat(testRequest.mListener1, is(instanceOf(RequestFuture.class)));
+        assertThat(testRequest.getErrorListener(), is(instanceOf(RequestFuture.class)));
+        assertTrue(testRequest.getErrorListener() == testRequest.mListener1);
+        verify(mockReqeustQueue, times(1)).add(testRequest);
+    }
+
+    @Test
+    public void getRequestFuture_Request() throws Exception {
+        VolleyX.sInited = true;
+        VolleyX.setRequestQueue(mockReqeustQueue);
+        TestRequest testRequest = new TestRequest(Request.Method.GET, "", null);
+
+        VolleyX.getRequestFuture(testRequest, null);
+        assertThat(testRequest.mListener, is(instanceOf(RequestFuture.class)));
+        assertThat(testRequest.getErrorListener(), is(instanceOf(RequestFuture.class)));
+        assertTrue(testRequest.getErrorListener() == testRequest.mListener);
+        verify(mockReqeustQueue, times(1)).add(testRequest);
+    }
+
+    static class TestRequest extends Request<String> {
+        Response.Listener<String> mListener;
+
+        public TestRequest(int method, String url, Response.ErrorListener listener) {
+            super(method, url, listener);
+        }
+
+        @Override
+        protected Response<String> parseNetworkResponse(NetworkResponse response) {
+            return null;
+        }
+
+        @Override
+        protected void deliverResponse(String response) {
+
+        }
+    }
+
+    static class TestRequest2 extends Request<String> {
+        Response.Listener<String> mListener1;
+
+        public TestRequest2(int method, String url, Response.ErrorListener listener) {
+            super(method, url, listener);
+        }
+
+        @Override
+        protected Response<String> parseNetworkResponse(NetworkResponse response) {
+            return null;
+        }
+
+        @Override
+        protected void deliverResponse(String response) {
+
+        }
     }
 }
