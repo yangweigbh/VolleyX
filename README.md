@@ -10,6 +10,8 @@ Some android developer is still using volley as their network library, and it sh
  
  `compile 'io.reactivex:rxjava:x.y.z'`
  
+ `compile 'com.android.volley:volley:1.0.0'`
+ 
  Init in the application onCreate, then everything is OK
  
  ```java
