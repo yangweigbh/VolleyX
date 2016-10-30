@@ -145,7 +145,7 @@ public class VolleyX {
 
     /**
      * Set the volley request queue. If not set, the default request queue of volley is used.
-     * restore the default volley request queue by calling {@link #setRequestQueue(VolleyX.DEFAULT_REQUESTQUEUE)}
+     * restore the default volley request queue by calling setRequestQueue(VolleyX.DEFAULT_REQUESTQUEUE)}
      *
      * @param queue
      */
