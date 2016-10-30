@@ -2,7 +2,7 @@
 Volley + RxJava, use Volley the Rx way
 
 ## Motivation
-Some android developer is still using volley as their network library, and it should be combined with RxJava to make the best out of it. There is another Volley + RxJava library, [here](https://github.com/kymjs/RxVolley), but it integrated the volley src code and modify it, which makes volley can not be upgraded independently. This library integrate with volley independently and you can using volley the original way.
+Some android developer is still using volley as their network library, and it should be combined with RxJava to make the bes of it. There is another Volley + RxJava library, [here](https://github.com/kymjs/RxVolley), but it integrated the volley src code and modify it, which makes volley can not be upgraded independently. This library integrate with volley independently and you can using volley the original way.
 
 ##Usage
 
@@ -12,7 +12,7 @@ Some android developer is still using volley as their network library, and it sh
  
  `compile 'com.android.volley:volley:1.0.0'`
  
- Init in the application onCreate, then everything is OK
+ **Step1: **Init in the application onCreate, then everything is OK
  
  ```java
 public class MyApplication extends Application {
@@ -23,7 +23,7 @@ public class MyApplication extends Application {
     }
 }
  ```
- Create request as usual, instead don't set the response listener and the error listner cause we will do it RxWay, use `VolleyX.from(requsest)` to create a Observable
+**Step2: **Create request as usual, instead don't set the response listener and the error listner cause we will do it RxWay, use `VolleyX.from(requsest)` to create a Observable
  
  ```java
 final StringRequest request = new StringRequest(URL, null, null);
@@ -74,4 +74,4 @@ VolleyX.from(request, "mListener1").subscribeOn(Schedulers.io())
  ```java
  VolleyX.setRequestQueue(your custom queue);
  ```
- 
+ any other usage, please refer to the demo
