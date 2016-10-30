@@ -12,7 +12,7 @@ Some android developer is still using volley as their network library, and it sh
  
  `compile 'com.android.volley:volley:1.0.0'`
  
- **Step1: **Init in the application onCreate, then everything is OK
+ **Step1:** Init in the application onCreate, then everything is OK
  
  ```java
 public class MyApplication extends Application {
@@ -23,7 +23,7 @@ public class MyApplication extends Application {
     }
 }
  ```
-**Step2: **Create request as usual, instead don't set the response listener and the error listner cause we will do it RxWay, use `VolleyX.from(requsest)` to create a Observable
+**Step2:** Create request as usual, instead don't set the response listener and the error listner cause we will do it RxWay, use `VolleyX.from(requsest)` to create a Observable
  
  ```java
 final StringRequest request = new StringRequest(URL, null, null);
