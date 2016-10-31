@@ -19,7 +19,7 @@ this project depend on
 if you want to use different version of rxjava and volley, add
 
 ```java
-compile('com.github.yangweigbh:volleyx:1.0.0') {
+compile('com.github.yangweigbh:volleyx:1.1.0') {
     transitive = false
 }
 ```
