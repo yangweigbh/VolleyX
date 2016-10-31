@@ -9,7 +9,7 @@ Some android developer is still using volley as their network library, and it sh
 
 ##Usage
 
- `compile 'com.github.yangweigbh:volleyx:1.0.0'`
+ `compile 'com.github.yangweigbh:volleyx:1.1.0'`
 
 this project depend on     
 > 'com.android.volley:volley:1.0.0'
