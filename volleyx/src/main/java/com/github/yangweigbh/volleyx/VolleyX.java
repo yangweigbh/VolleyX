@@ -24,18 +24,9 @@ import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import com.github.yangweigbh.volleyx.utils.Hack;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Func0;
 
 /**
@@ -81,7 +72,7 @@ public class VolleyX {
             public Observable<T> call() {
                 try {
                     return Observable.just(generateData(request));
-                } catch (InterruptedException | ExecutionException | IOException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     VolleyXLog.e(e.getMessage());
                     return Observable.error(e);
                 }
@@ -106,7 +97,7 @@ public class VolleyX {
             public Observable<T> call() {
                 try {
                     return Observable.just(generateData(request, listernerField));
-                } catch (InterruptedException | ExecutionException | IOException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     VolleyXLog.e(e.getMessage());
                     return Observable.error(e);
                 }
@@ -114,11 +105,11 @@ public class VolleyX {
         });
     }
 
-    static <T> T generateData(Request<T> request) throws InterruptedException, ExecutionException, IOException {
+    static <T> T generateData(Request<T> request) throws InterruptedException, ExecutionException {
         return generateData(request, DEFAULT_LISTENER_FIELD);
     }
 
-    static <T> T generateData(Request<T> request, String listernerField) throws InterruptedException, ExecutionException, IOException {
+    static <T> T generateData(Request<T> request, String listernerField) throws InterruptedException, ExecutionException {
         if (request == null) throw new NullPointerException("request can not be null");
         RequestFuture<T> future = getRequestFuture(request, listernerField);
 
