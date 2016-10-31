@@ -17,7 +17,7 @@ apply plugin: 'maven-publish'
 
 project.ext.group = 'com.github.yangweigbh'
 project.ext.archivesBaseName = 'volleyx'
-project.ext.version = '1.0.0'
+project.ext.version = '1.1.0'
 project.ext.pomDesc = 'Volley RxJava Extension'
 
 task sourcesJar(type: Jar) {
@@ -99,7 +99,7 @@ bintray {
         version {
             name = project.ext.version
             desc = project.ext.pomDesc + ' version ' + project.ext.version
-            vcsTag = '1.0.0'
+            vcsTag = '1.1.0'
         }
     }
 }
