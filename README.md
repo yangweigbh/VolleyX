@@ -1,4 +1,7 @@
 # VolleyX
+
+[![Build Status](https://travis-ci.org/yangweigbh/VolleyX.svg?branch=master)](https://travis-ci.org/yangweigbh/VolleyX)
+
 Volley + RxJava, use Volley the Rx way
 
 ## Motivation
