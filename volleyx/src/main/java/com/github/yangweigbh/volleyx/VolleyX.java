@@ -33,7 +33,6 @@ import rx.functions.Func0;
  * Created by yangwei on 2016/10/29.
  */
 public class VolleyX {
-    private static final String DEFAULT_DEX_DIR = "dx";
     private static final String DEFAULT_LISTENER_FIELD = "mListener";
     private static final String DEFAULT_ERROR_LISTENER_FIELD = "mErrorListener";
 
