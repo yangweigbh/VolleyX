@@ -5,7 +5,7 @@
 Volley + RxJava, use Volley the Rx way
 
 ## Motivation
-Some android developer is still using volley as their network library, and it should be combined with RxJava to make the bes of it. There is another Volley + RxJava library, [here](https://github.com/kymjs/RxVolley), but it integrated the volley src code and modify it, which makes volley can not be upgraded independently. This library integrate with volley independently and you can using volley the original way.
+Some android developer is still using volley as their network library, and it should be combined with RxJava to make the best of it. There is another Volley + RxJava library, [here](https://github.com/kymjs/RxVolley), but it integrated the volley src code and modify it, which makes volley can not be upgraded independently. This library integrate with volley independently and you can using volley the original way.
 
 ##Usage
 
@@ -35,7 +35,7 @@ public class MyApplication extends Application {
     }
 }
  ```
-**Step2:** Create request as usual, instead don't set the response listener and the error listner cause we will do it RxWay, use `VolleyX.from(requsest)` to create a Observable
+**Step2:** Create request as usual, instead don't set the response listener and the error listener cause we will do it RxWay, use `VolleyX.from(requsest)` to create a Observable
  
  ```java
 final StringRequest request = new StringRequest(URL, null, null);
