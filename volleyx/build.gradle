@@ -33,6 +33,11 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    jacocoAndroidUnitTestReport {
+        html.enabled false
+        xml.enabled true
+    }
 }
 
 dependencies {
